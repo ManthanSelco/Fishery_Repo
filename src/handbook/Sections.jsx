@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SecHead } from './Handbook.jsx';
+import { SecHead } from './common.jsx';
 import { Fig, InfoBox } from './Chapters.jsx';
 
 const SP = (n) => `${import.meta.env.BASE_URL}images/sp-${n}.jpg`;

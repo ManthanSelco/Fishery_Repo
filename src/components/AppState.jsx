@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Icon from './Icon.jsx';
 
 /* localStorage helpers — same keys as the original pages so existing browser data carries over. */
@@ -33,6 +34,10 @@ export function AppProvider({ children }) {
   const [saved, setSaved] = usePersistent('jp_saved', []);
   const [lowBand, setLowBand] = usePersistent('jp_lowband', false);
   const timer = useRef();
+  const { pathname } = useLocation();
+
+  // a popup never outlives the page it was opened on
+  useLayoutEffect(() => setModal(null), [pathname]);
 
   const toast = useCallback((msg) => {
     setToastMsg(msg);

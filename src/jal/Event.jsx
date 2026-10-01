@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
-import { EVENT, PROGRAM, OUTCOMES, OUTCOMES_INTRO, FIELD_VISIT } from '../data/event.js';
+import { downloadFile } from '../components/download.js';
+import { EVENT, PROGRAM, OUTCOMES, OUTCOMES_INTRO } from '../data/event.js';
 
 /* ---------- time helpers (all in IST) ---------- */
 const toMin = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
@@ -36,24 +37,15 @@ function downloadICS() {
     `SUMMARY:${esc(EVENT.title)} — ${EVENT.kicker}`, `LOCATION:${esc(EVENT.venue)}`,
     `DESCRIPTION:${esc('Organised by ' + EVENT.organizer + '. Registration 9:00. Program 9:45 - 17:15.')}`,
     'END:VEVENT',
-    'BEGIN:VEVENT', 'UID:fisheries-convening-2026-day2@jalpathways', `DTSTAMP:${stamp}`,
-    'DTSTART;VALUE=DATE:20261008', 'DTEND;VALUE=DATE:20261009',
-    `SUMMARY:${esc('Field visit — ' + EVENT.title)}`, `LOCATION:${esc('Aquaculture sites in and around Guwahati')}`,
-    `DESCRIPTION:${esc(FIELD_VISIT.sites.map((s) => s.name + ' (' + s.location + ')').join(' | '))}`,
-    'END:VEVENT', 'END:VCALENDAR',
+    'END:VCALENDAR',
   ].join('\r\n');
-  const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
-  const a = document.createElement('a');
-  a.href = url; a.download = 'Fisheries-Convening-Guwahati-2026.ics';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  downloadFile('Fisheries-Convening-Guwahati-2026.ics', ics, 'text/calendar');
 }
 
 const SECTIONS = [
   ['ev-overview', 'Overview'],
   ['ev-programme', 'Programme'],
   ['ev-outcomes', 'Outcomes'],
-  ['ev-field', 'Field visit · 08 Oct'],
 ];
 const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -77,7 +69,6 @@ export function EventFeature() {
             <h2>{EVENT.title}</h2>
             <p className="ev-meta-line">
               <span><Icon name="📍" size={15} /> {EVENT.venue}</span>
-              <span><Icon name="clipboard" size={15} /> {EVENT.participantsCount}</span>
               <span><Icon name="🔗" size={15} /> Organized by {EVENT.organizer}</span>
             </p>
           </div>
@@ -115,7 +106,7 @@ export default function Event() {
               <span className={`ev-status ${st.state} on-dark`}><i />{st.label}</span>
             </div>
             <h1>{EVENT.title}</h1>
-            <p className="ev-lede">A one-day dialogue on climate resilience in aquaculture, from farm-level experience to a Vision 2036 for India, followed by a field visit to solar-powered aquaculture sites around Guwahati.</p>
+            <p className="ev-lede">A one-day dialogue on climate resilience in aquaculture, from farm-level experience to a Vision 2036 for India, with field voices, expert and state perspectives, and thematic working groups.</p>
             <div className="hero-ctas">
               <button className="btn btn-solar" onClick={() => go('ev-programme')}><Icon name="clipboard" size={16} /> See the programme</button>
               <button className="btn btn-ghost-light" onClick={downloadICS}><Icon name="📥" size={16} /> Add to calendar</button>
@@ -124,9 +115,8 @@ export default function Event() {
           <dl className="ev-facts">
             <div><dt>Date</dt><dd>{EVENT.dateLabel}</dd><span>{EVENT.time}</span></div>
             <div><dt>Venue</dt><dd>{EVENT.venue}</dd></div>
-            <div><dt>Participants</dt><dd>{EVENT.participantsCount}</dd></div>
+            <div><dt>Participants</dt><dd>{EVENT.participants.map((p) => p.label).join(', ')}</dd></div>
             <div><dt>Organized by</dt><dd>{EVENT.organizer}</dd></div>
-            <div><dt>Field visit</dt><dd>{FIELD_VISIT.dateLabel}</dd><span>5 sites in and around Guwahati</span></div>
           </dl>
         </div>
       </section>
@@ -150,7 +140,6 @@ export default function Event() {
           </div>
           <aside className="panel ev-who">
             <h3>Who's in the room</h3>
-            <p className="ev-small">{EVENT.participantsCount}</p>
             <ul>
               {EVENT.participants.map((p) => (
                 <li key={p.label}><span className="lr-ic"><Icon name={p.icon} size={17} /></span>{p.label}</li>
@@ -241,38 +230,11 @@ export default function Event() {
         </div>
       </section>
 
-      {/* ---------- field visit ---------- */}
-      <section className="section band" id="ev-field">
-        <div className="wrap">
-          <div className="section-head">
-            <div>
-              <div className="eyebrow">Proposed field visit plan · {FIELD_VISIT.dateShort}</div>
-              <h2>Day 2: see it working in the field</h2>
-              <p>{FIELD_VISIT.intro}</p>
-            </div>
-          </div>
-          <ol className="ev-sites">
-            {FIELD_VISIT.sites.map((s, i) => (
-              <li key={s.name} className="ev-site">
-                <div className="ev-site-top">
-                  <span className="ev-site-n">Stop {i + 1}</span>
-                  <Icon name={s.icon} size={22} />
-                </div>
-                <h3>{s.name}</h3>
-                <p className="ev-site-loc"><Icon name="📍" size={14} /> {s.location}</p>
-                <p className="ev-site-focus">{s.focus}</p>
-                <Link to={s.link.to} className="ev-site-link">Learn more: {s.link.label} <Icon name="arrow" size={14} /></Link>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
       <section className="section tight">
         <div className="wrap ev-end">
           <div>
             <h3>Read up before you come</h3>
-            <p>The India Fisheries Handbook covers every system you will see on the field visit, from hatcheries to solar-powered RAS.</p>
+            <p>The India Fisheries Handbook covers the systems discussed at the convening, from hatcheries and biofloc to solar-powered RAS.</p>
           </div>
           <div className="ev-end-actions">
             <Link to="/handbook" className="btn btn-pond"><Icon name="📖" size={16} /> Open the Handbook</Link>

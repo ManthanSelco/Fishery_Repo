@@ -2,8 +2,8 @@ import { useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import { usePersistent } from '../components/AppState.jsx';
 import { DISEASE_DB, TYPE_COLORS } from '../data/handbook.js';
-import { downloadCSV } from '../jal/Records.jsx';
-import { SecHead } from './Handbook.jsx';
+import { downloadCSV } from '../components/download.js';
+import { SecHead } from './common.jsx';
 import { InfoBox } from './Chapters.jsx';
 
 const SYMPTOMS = [

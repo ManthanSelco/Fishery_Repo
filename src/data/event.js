@@ -12,7 +12,6 @@ export const EVENT = {
   time: '9:00 – 17:15',
   venue: 'SELCO Office, Guwahati, Assam',
   organizer: 'SELCO Foundation',
-  participantsCount: '40-50 Participants',
   // IST start / end, used for the countdown, the live "now" marker and the calendar file
   start: '2026-10-07T09:00:00+05:30',
   end: '2026-10-07T17:15:00+05:30',
@@ -131,16 +130,3 @@ export const OUTCOMES = [
   { title: 'Stakeholder network', icon: '📍', text: 'A stakeholder network for continued engagement, providing a foundation for subsequent thematic discussions, collaborations and program-level partnerships.' },
   { title: 'Portfolio direction', icon: '🎯', text: "Clearer direction for SELCO's future aquaculture portfolio, informed by sector priorities rather than being defined only through individual technology opportunities." },
 ];
-
-export const FIELD_VISIT = {
-  dateLabel: 'Thursday, 08 October 2026',
-  dateShort: '08 Oct 2026',
-  intro: 'The second day of the engagement will include visits to selected aquaculture sites in and around Guwahati, providing participants an opportunity to observe field level applications, interact directly with farmers and practitioners, and understand the practical realities of different aquaculture systems.',
-  sites: [
-    { name: 'Eastern Agro Farming', location: 'Bangalgaon', focus: 'Hatchery, integrated fish culture', icon: '🥚', link: { to: '/chapter/ch2', label: 'Chapter 2 · Fish Hatchery' } },
-    { name: 'Biofloc Unit', location: 'Hajo, Kamrup District', focus: 'Solar powered aeration system for biofloc unit', icon: '🦠', link: { to: '/solar/sol_biofloc', label: 'Solar Biofloc System' } },
-    { name: 'RAS Unit', location: 'Hajo, Kamrup District', focus: 'Solar powered aeration system for Recirculating Aquaculture System (RAS)', icon: '🔄', link: { to: '/solar/sol_ras', label: 'Solar RAS' } },
-    { name: 'Field School, Kalong Kapili', location: 'Bagibari, Kamrup Metro', focus: 'Field school comprising end to end fisheries technologies', icon: '📖', link: { to: '/stories?open=cs1', label: 'Field story · Kalong Kapili' } },
-    { name: 'Ornamental Fish Breeding Unit', location: 'Darrang', focus: 'Solar powered aeration system for ornamental fish breeding', icon: '🐠', link: { to: '/solar/sol_ornamental', label: 'Solar Ornamental Fish Breeding' } },
-  ],
-};

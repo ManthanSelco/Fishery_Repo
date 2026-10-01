@@ -6,6 +6,7 @@ import ValueChain from './ValueChain.jsx';
 import { HatcherySection, BioflocSection, RasSection, ProcessingSection } from './Chapters.jsx';
 import { SpeciesGuide, WaterQualitySection, ClimateSection } from './Sections.jsx';
 import { DiseaseChecker, RecordKeeper, ProfitCalculator } from './Tools.jsx';
+import { SecHead, goTo } from './common.jsx';
 
 const NAV = [
   { id: 'overview', label: 'Overview', icon: 'compass' },
@@ -21,18 +22,6 @@ const NAV = [
   { id: 'records', label: 'Record Keeper', icon: 'clipboard' },
   { id: 'calculator', label: 'Profit Calculator', icon: 'calc' },
 ];
-
-export const goTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-export function SecHead({ no, title, desc }) {
-  return (
-    <div className="hb-sec-head">
-      <span className="no">{no}</span>
-      <h2>{title}</h2>
-      {desc && <p>{desc}</p>}
-    </div>
-  );
-}
 
 export default function Handbook() {
   const [sideOpen, setSideOpen] = useState(false);

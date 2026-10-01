@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
-import { KEY_STATS, VALUE_CHAIN, FARMING_SYSTEMS, SPECIES, TOOLS, CASE_STUDIES, CHAPTERS } from '../data/jal.js';
+import { KEY_STATS, VALUE_CHAIN, FARMING_SYSTEMS, SPECIES, TOOLS, CASE_STUDIES } from '../data/jal.js';
 import { SpeciesArt, IconArt, tagClass, SYS_TO_CH } from './media.jsx';
 import { EventFeature } from './Event.jsx';
 
@@ -211,32 +211,6 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="jp-footer">
-        <div className="wrap cols">
-          <div>
-            <h4>Jal Pathways</h4>
-            <p>Practical pathways for climate-resilient aquaculture. Built for the Indian fisheries sector.</p>
-            <p style={{ fontSize: '.8rem', opacity: 0.8 }}>Based on the Fisheries Handbook developed for SELCO Foundation.</p>
-          </div>
-          <div>
-            <h4>Chapters</h4>
-            {CHAPTERS.slice(0, 5).map((c) => <Link key={c.id} to={`/chapter/${c.id}`}>{c.title}</Link>)}
-          </div>
-          <div>
-            <h4>Tools</h4>
-            {TOOLS.map((t) => <Link key={t.id} to={`/tools/${t.id}`}>{t.name}</Link>)}
-          </div>
-          <div>
-            <h4>Resources</h4>
-            <Link to="/glossary">Glossary</Link>
-            <Link to="/species">Species Explorer</Link>
-            <Link to="/solar">Solar Solutions</Link>
-            <Link to="/records">Farm Records</Link>
-            <Link to="/handbook">India Fisheries Handbook</Link>
-            <Link to="/event">National Convening · 7 Oct</Link>
-          </div>
-        </div>
-      </footer>
     </>
   );
 }

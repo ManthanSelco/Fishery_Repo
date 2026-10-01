@@ -2,23 +2,12 @@ import { useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import { useApp, usePersistent } from '../components/AppState.jsx';
 import { RECORD_TYPES } from '../data/jal.js';
+import { downloadCSV } from '../components/download.js';
 import { PageHead } from './Layout.jsx';
 
 const labelOf = (f) => f.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
 const NUM_HINTS = ['quantity', 'cost', 'price', 'total', 'amount', 'count', 'area', 'depth', 'size', 'weight', 'biomass', 'do', 'ph', 'ammonia', 'nitrite', 'turbidity', 'hours'];
 const typeOf = (f) => (f.includes('date') ? 'date' : NUM_HINTS.some((h) => f.includes(h)) ? 'number' : 'text');
-
-export function downloadCSV(filename, text) {
-  const blob = new Blob([text], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 export default function Records() {
   const { toast } = useApp();

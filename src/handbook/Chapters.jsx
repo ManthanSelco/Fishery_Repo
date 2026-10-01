@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Icon from '../components/Icon.jsx';
-import { SecHead } from './Handbook.jsx';
+import { SecHead } from './common.jsx';
 
 const P = (n) => `${import.meta.env.BASE_URL}images/hb-${n}.jpg`;
 
