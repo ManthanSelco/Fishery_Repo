@@ -86,7 +86,7 @@ export default function Handbook() {
           ))}
         </nav>
         <div className="hb-side-foot">
-          <Link to="/"><Icon name="back" size={15} /> Jal Pathways platform</Link>
+          <Link to="/"><Icon name="back" size={15} /> Selco Innovation platform</Link>
           <Link to="/event"><Icon name="calendar" size={15} /> National Convening · 7 Oct</Link>
           <a href={`${import.meta.env.BASE_URL}India_Fisheries_Handbook_Complete.pdf`} target="_blank" rel="noopener"><Icon name="📄" size={15} /> Handbook PDF</a>
         </div>
@@ -138,7 +138,7 @@ export default function Handbook() {
 
         <footer className="hb-footer">
           <div><strong>India Fisheries Handbook</strong> — Digital Interactive Edition with Real Photography<br />Field sites: Assam, Jharkhand, Odisha</div>
-          <Link to="/">Open the Jal Pathways platform →</Link>
+          <Link to="/">Open the Selco Innovation platform →</Link>
         </footer>
       </div>
 

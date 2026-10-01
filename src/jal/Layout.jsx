@@ -49,9 +49,9 @@ export default function Layout() {
     <div className="jp-shell">
       <header className="jp-top">
         <div className="wrap jp-top-inner">
-          <Link to="/" className="brand" aria-label="Jal Pathways home">
+          <Link to="/" className="brand" aria-label="Selco Innovation home">
             <span className="brand-mark"><Icon name="🐟" size={18} strokeWidth={2} /></span>
-            Jal Pathways
+            Selco Innovation
           </Link>
 
           <nav className="jp-nav" aria-label="Main">
@@ -115,7 +115,7 @@ export default function Layout() {
       <footer className="jp-footer">
         <div className="wrap cols">
           <div>
-            <h4>Jal Pathways</h4>
+            <h4>Selco Innovation</h4>
             <p>Practical pathways for climate-resilient aquaculture. Built for the Indian fisheries sector.</p>
             <p style={{ fontSize: '.8rem', opacity: 0.8 }}>Based on the Fisheries Handbook developed for SELCO Foundation.</p>
           </div>

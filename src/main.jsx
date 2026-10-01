@@ -19,7 +19,7 @@ function ScrollAndTitle() {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = TITLES[pathname] || 'Jal Pathways — Fisheries & Aquaculture Field Platform';
+    document.title = TITLES[pathname] || 'Selco Innovation — Fisheries & Aquaculture Field Platform';
   }, [pathname]);
   return null;
 }
