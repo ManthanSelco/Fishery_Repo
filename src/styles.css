@@ -711,3 +711,13 @@ figure.fig figcaption { padding: 10px 12px; font-size: .8rem; color: var(--ink-s
 .ev-end h3 { font-size: 1.2rem; margin-bottom: 4px; }
 .ev-end p { color: var(--ink-soft); max-width: 60ch; }
 .ev-end-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* =========================================================================
+   8. Logo (public/logo.png) in the top bar and the Handbook sidebar
+   ========================================================================= */
+.brand-logo { height: 38px; width: auto; display: block; }
+.hb-brand .mk { background: #fff; padding: 4px; width: 48px; height: 48px; }
+.hb-logo { width: 100%; height: 100%; object-fit: contain; display: block; }
+@media (max-width: 520px) { .brand-logo { height: 32px; } }
+@media (max-width: 520px) { .brand-name { font-size: .98rem; } }
+@media (max-width: 430px) { .brand-name { display: none; } }  /* phones: logo alone, so the icons have room */

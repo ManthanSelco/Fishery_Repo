@@ -1,6 +1,7 @@
 import Icon from '../components/Icon.jsx';
+import { asset } from '../components/asset.js';
 
-const img = (name) => `${import.meta.env.BASE_URL}images/${name}.jpg`;
+const img = (name) => asset(`images/${name}.jpg`);
 
 /* Real photos (same set the original embedded). Species without a photo get a coloured tile. */
 const PHOTO_IDS = ['catla', 'rohu', 'mrigal', 'grass_carp', 'silver_carp', 'common_carp', 'tilapia', 'pangasius', 'magur', 'murrel', 'pabda', 'kawai', 'singhi', 'mola'];

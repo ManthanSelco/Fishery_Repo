@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { SecHead } from './common.jsx';
 import { Fig, InfoBox } from './Chapters.jsx';
+import { asset } from '../components/asset.js';
 
-const SP = (n) => `${import.meta.env.BASE_URL}images/sp-${n}.jpg`;
+const SP = (n) => asset(`images/sp-${n}.jpg`);
 
 const SPECIES = [
   { img: 'catla', name: 'Catla', latin: 'Catla catla', badge: 'IMC', cat: 'common' },

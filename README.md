@@ -188,7 +188,7 @@ Fishery_Repo/
 ├── package.json                   scripts and dependencies
 ├── vite.config.js                 Vite settings (base './')
 ├── public/                        copied as-is into the build
-│   ├── favicon.svg                browser-tab icon
+│   ├── logo.png                   SELCO logo: browser-tab icon, top bar and Handbook sidebar
 │   ├── images/                    hb-*.jpg handbook photos, sp-*.jpg species photos
 │   └── India_Fisheries_Handbook*.pdf
 └── src/

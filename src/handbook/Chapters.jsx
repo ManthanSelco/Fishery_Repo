@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import { SecHead } from './common.jsx';
+import { asset } from '../components/asset.js';
 
-const P = (n) => `${import.meta.env.BASE_URL}images/hb-${n}.jpg`;
+const P = (n) => asset(`images/hb-${n}.jpg`);
 
 export function Fig({ src, alt, caption }) {
   return (

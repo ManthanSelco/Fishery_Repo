@@ -7,6 +7,7 @@ import { HatcherySection, BioflocSection, RasSection, ProcessingSection } from '
 import { SpeciesGuide, WaterQualitySection, ClimateSection } from './Sections.jsx';
 import { DiseaseChecker, RecordKeeper, ProfitCalculator } from './Tools.jsx';
 import { SecHead, goTo } from './common.jsx';
+import { asset } from '../components/asset.js';
 
 const NAV = [
   { id: 'overview', label: 'Overview', icon: 'compass' },
@@ -65,7 +66,7 @@ export default function Handbook() {
 
       <aside className={`hb-side${sideOpen ? ' open' : ''}`}>
         <div className="hb-brand">
-          <span className="mk"><Icon name="🐟" size={26} /></span>
+          <span className="mk"><img src={asset('logo.png')} alt="SELCO Foundation" className="hb-logo" /></span>
           <div>
             <div className="t">India Fisheries Handbook</div>
             <div className="s">Digital Interactive Edition · 2025</div>
@@ -88,7 +89,7 @@ export default function Handbook() {
         <div className="hb-side-foot">
           <Link to="/"><Icon name="back" size={15} /> Selco Innovation platform</Link>
           <Link to="/event"><Icon name="calendar" size={15} /> National Convening · 7 Oct</Link>
-          <a href={`${import.meta.env.BASE_URL}India_Fisheries_Handbook_Complete.pdf`} target="_blank" rel="noopener"><Icon name="📄" size={15} /> Handbook PDF</a>
+          <a href={asset('India_Fisheries_Handbook_Complete.pdf')} target="_blank" rel="noopener"><Icon name="📄" size={15} /> Handbook PDF</a>
         </div>
       </aside>
 

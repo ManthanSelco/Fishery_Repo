@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import Icon from '../components/Icon.jsx';
 import { useApp } from '../components/AppState.jsx';
 import { CHAPTERS, TOOLS } from '../data/jal.js';
+import { asset } from '../components/asset.js';
 
 const NAV = [
   { to: '/', label: 'Home', end: true },
@@ -50,8 +51,8 @@ export default function Layout() {
       <header className="jp-top">
         <div className="wrap jp-top-inner">
           <Link to="/" className="brand" aria-label="Selco Innovation home">
-            <span className="brand-mark"><Icon name="🐟" size={18} strokeWidth={2} /></span>
-            Selco Innovation
+            <img src={asset('logo.png')} alt="SELCO Foundation" className="brand-logo" />
+            <span className="brand-name">Selco Innovation</span>
           </Link>
 
           <nav className="jp-nav" aria-label="Main">
