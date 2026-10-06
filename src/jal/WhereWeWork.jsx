@@ -1,242 +1,168 @@
-import { useEffect, useRef } from 'react';
-import { GEO } from '../data/indiaGeo.js';
+import { useEffect, useState } from 'react';
+import { INDIA_MAP } from '../data/indiaMap.js';
 
-/* Climate Resilient Fisheries: where we work.
-   Ported from Climate_Resilient_Fisheries__where_we_work.html — same states, places and work.
-   The map is drawn imperatively (as in the original) inside this component's own DOM. */
+/* Where We Work — "Fisheries, ready for a changing climate" (aquaculture across India).
+   Rebuilt from aquaculture-across-india.html with the same content and behaviour. */
 
-const STATES = {
-  'Maharashtra': { c: '#E5A03A', side: 'L', y: 398, places: ['Gadchiroli'], work: ['Pond culture'] },
-  'Karnataka': { c: '#DE5A4A', side: 'L', y: 560, places: ['Udupi'], work: ['Pearl culture', 'Fish vending'] },
-  'Telangana': { c: '#8F64C8', side: 'L', y: 478, places: ['Hyderabad'], work: ['Live fish vending'] },
-  'Andhra Pradesh': { c: '#2E93CF', side: 'R', y: 575, places: ['West Godavari'], work: ['Shrimp culture', 'Murrel culture', 'Crab fattening'] },
-  'Odisha': { c: '#E5772E', side: 'R', y: 495, places: ['Puri', 'Khordha'], work: ['Biofloc units', 'RAS unit', 'Pond culture'] },
-  'Jharkhand': { c: '#5FA040', side: 'R', y: 425, places: ['Hazaribagh', 'Giridih', 'Jamshedpur'], work: ['Biofloc units', 'RAS unit', 'Live fish transport', 'Pond culture'] },
-  'Assam': { c: '#CC4A8A', side: 'R', y: 238, places: ['Kamrup', 'Morigaon', 'Nagaon', 'Sonitpur'], work: ['End to end value chain, from hatchery to fish drying'] },
-  'Meghalaya': { c: '#25A398', side: 'R', y: 300, places: ['East Khasi Hills'], work: ['Trout culture'] },
-  'Mizoram': { c: '#A9A32E', side: 'R', y: 362, places: [], placeText: 'Upper Mizoram and the rest of Mizoram', work: ['Champion fish farmers Kima and Samuel run their own hatcheries and sell fish in nearby districts'] },
-  'Nagaland': { c: '#4F63C4', side: 'R', y: 180, places: ['Dimapur'], work: ['Biofloc units (being set up)', 'Fish feed mill (being set up)'] },
+const STATES = ['Maharashtra', 'Karnataka', 'Odisha', 'Jharkhand', 'Andhra Pradesh', 'Telangana', 'Assam', 'Meghalaya', 'Mizoram', 'Nagaland'];
+const INFO = {
+  'Karnataka': { where: 'Udupi', activities: ['Pearl culture', 'Live fish vending vehicles set up'], status: 'Work reported' },
+  'Maharashtra': { where: 'Gadchiroli', activities: ['Pond culture with new fish farmers'], status: 'Work reported' },
+  'Jharkhand': { where: 'Hazaribagh and the Jamshedpur area', activities: ['Pond culture', 'Recirculating aquaculture system (RAS) units', 'Biofloc', 'Live fish vending'], status: 'Work reported' },
+  'Odisha': { where: 'Puri and Khordha region', activities: ['RAS units', 'Pond culture'], status: 'Work reported' },
+  'Assam': { where: 'Kamrup, Nagaon and Udalguri', activities: ['End-to-end fisheries value chain', 'From hatchery to fish drying'], status: 'Work reported' },
+  'Meghalaya': { where: 'East Khasi Hills and Ri Bhoi', activities: ['Trout culture'], status: 'Work reported' },
+  'Mizoram': { where: 'Kolasib and Mamit', activities: ['RAS units'], status: 'Work reported' },
+  'Nagaland': { where: 'Near Dimapur', activities: ['Biofloc units', 'Fish ponds', 'Feed mills'], status: 'Planned' },
+  'Andhra Pradesh': { where: 'West Godavari and Kakinada region', activities: ['Shrimp culture', 'Murrel biofloc unit'], status: 'Work reported' },
+  'Telangana': { where: 'Hyderabad', activities: ['Live fish vending and marketing'], status: 'Work reported' },
 };
-const ORDER = ['Maharashtra', 'Karnataka', 'Telangana', 'Andhra Pradesh', 'Odisha', 'Jharkhand', 'Assam', 'Meghalaya', 'Mizoram', 'Nagaland'];
-const SITE_DIR = {
-  Gadchiroli: 'r', Udupi: 'r', Hyderabad: 'r', 'West Godavari': 'r', Puri: 'r', Khordha: 'l', Hazaribagh: 'l', Giridih: 'r', Jamshedpur: 'r',
-  Kamrup: 'l', Morigaon: 'b', Nagaon: 'r', Sonitpur: 'r', 'East Khasi Hills': 'b', Dimapur: 'r',
-};
-const NS = 'http://www.w3.org/2000/svg';
-
-function mountMap(root) {
-  const $ = (s) => root.querySelector(s);
-  const svg = $('.ww-map'), card = $('.ww-mapcard'), chips = $('.ww-chips'), panel = $('.ww-panel');
-  const gStates = $('.ww-states'), gC = $('.ww-callouts'), gS = $('.ww-sites'), fishes = $('.ww-fishes');
-  const el = (t, a = {}, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
-  const FULL = matchMedia('(max-width:640px)').matches ? { x: 160, y: 0, w: 640, h: 720 } : { x: 0, y: 0, w: 1010, h: 720 };
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let vb = { ...FULL }, active = null, anim = null;
-  const paths = {};
-  const cleanups = [];
-  const on = (t, ev, fn) => { t.addEventListener(ev, fn); cleanups.push(() => t.removeEventListener(ev, fn)); };
-  const activate = (t, fn) => {
-    on(t, 'click', fn);
-    on(t, 'keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
-  };
-  const hlState = (n, v) => paths[n] && paths[n].classList.toggle('hl', v);
-
-  // states
-  for (const [name, s] of Object.entries(GEO.states)) {
-    const isOn = !!STATES[name];
-    const p = el('path', { d: s.d, class: 'ww-st' + (isOn ? ' on' : '') }, gStates);
-    if (isOn) {
-      p.style.fill = STATES[name].c;
-      p.setAttribute('tabindex', '0'); p.setAttribute('role', 'button'); p.setAttribute('aria-label', name + ': show fisheries work');
-      activate(p, () => select(name));
-      on(p, 'mouseenter', () => hlState(name, true)); on(p, 'mouseleave', () => hlState(name, false));
-      paths[name] = p;
-    } else {
-      el('title', {}, p).textContent = name;
-    }
-  }
-  ORDER.forEach((n) => gStates.appendChild(paths[n]));
-
-  // fish in the seas
-  [[640, 470, 60, -14, 9], [700, 560, -50, 10, 11], [620, 620, 70, 6, 13], [230, 560, 40, 18, 10], [280, 640, -55, -8, 12], [180, 470, 30, -12, 14]].forEach(([x, y, dx, dy, t]) => {
-    const g = el('g', { transform: `translate(${x},${y}) scale(${dx < 0 ? -0.85 : 0.85},0.85)` }, fishes);
-    const inner = el('g', { class: 'ww-swim' }, g);
-    inner.style.setProperty('--dx', Math.abs(dx) + 'px'); inner.style.setProperty('--dy', dy + 'px'); inner.style.setProperty('--t', t + 's');
-    el('use', { href: '#ww-fishshape', class: 'ww-fish' }, inner);
-  });
-
-  // callouts with arrows
-  ORDER.forEach((name, i) => {
-    const s = STATES[name], [tx, ty] = GEO.targets[name];
-    const g = el('g', { class: 'ww-callout', tabindex: '0', role: 'button', 'aria-label': name + ': show fisheries work' }, gC);
-    g.style.setProperty('--dl', (0.25 + i * 0.08) + 's');
-    const txt = el('text', { y: s.y + 5.5 }, g); txt.textContent = name;
-    const tw = txt.getComputedTextLength ? txt.getComputedTextLength() || name.length * 8 : name.length * 8;
-    const w = tw + 40, h = 32;
-    const x0 = s.side === 'L' ? Math.max(6, 160 - w) : Math.min(850, 1004 - w); // keep long labels inside the map
-    const r = el('rect', { x: x0, y: s.y - h / 2, width: w, height: h, rx: 16 }, g); r.style.stroke = s.c;
-    g.insertBefore(r, txt);
-    el('circle', { cx: x0 + 16, cy: s.y, r: 6.5, fill: s.c }, g);
-    txt.setAttribute('x', x0 + 29);
-    const sx = s.side === 'L' ? x0 + w : x0, sy = s.y;
-    const dx = tx - sx, dy = ty - sy, len = Math.hypot(dx, dy);
-    const ex = tx - (dx / len) * 3, ey = ty - (dy / len) * 3;
-    const nx = -dy / len, ny = dx / len, bend = (s.side === 'L' ? -1 : 1) * 0.16 * len;
-    const cx = (sx + ex) / 2 + nx * bend, cy = (sy + ey) / 2 + ny * bend;
-    const dPath = `M${sx},${sy}Q${cx},${cy} ${ex},${ey}`;
-    const cas = el('path', { class: 'ww-arrow casing', d: dPath }, gC);
-    const a = el('path', { class: 'ww-arrow', d: dPath }, gC);
-    a.style.stroke = s.c;
-    const L = a.getTotalLength();
-    [cas, a].forEach((q) => { q.style.setProperty('--dl', (0.25 + i * 0.08) + 's'); q.style.setProperty('--len', L); });
-    const p1 = a.getPointAtLength(L - 14), ang = Math.atan2(ey - p1.y, ex - p1.x), H = 15;
-    const hd = el('path', { d: `M${tx},${ty}L${tx - H * Math.cos(ang - 0.45)},${ty - H * Math.sin(ang - 0.45)}L${tx - H * Math.cos(ang + 0.45)},${ty - H * Math.sin(ang + 0.45)}Z`, class: 'ww-callout ww-head' }, gC);
-    hd.style.fill = s.c; hd.style.setProperty('--dl', (1.0 + i * 0.08) + 's'); hd.style.cursor = 'default';
-    gC.appendChild(g);
-    activate(g, () => select(name));
-    on(g, 'mouseenter', () => hlState(name, true)); on(g, 'mouseleave', () => hlState(name, false));
-  });
-
-  // chips
-  ORDER.forEach((name) => {
-    const b = document.createElement('button'); b.className = 'ww-chip'; b.type = 'button'; b.setAttribute('aria-pressed', 'false');
-    const dot = document.createElement('i'); dot.style.background = STATES[name].c;
-    b.append(dot, name); b.dataset.state = name;
-    on(b, 'click', () => (active === name ? reset() : select(name)));
-    chips.appendChild(b);
-  });
-
-  $('.ww-outline').setAttribute('d', GEO.outline || '');
-
-  // sites
-  function scaleSites() {
-    const k = vb.w / (svg.clientWidth || 1010);
-    gS.querySelectorAll('.ww-site').forEach((g) => g.setAttribute('transform', `translate(${g.dataset.x},${g.dataset.y}) scale(${k})`));
-  }
-  function drawSites(name) {
-    gS.innerHTML = '';
-    if (!name) return;
-    STATES[name].places.forEach((pl, i) => {
-      const [x, y] = GEO.sites[pl];
-      const g = el('g', { class: 'ww-site', 'data-site': pl }, gS); g.dataset.x = x; g.dataset.y = y;
-      const ring = el('circle', { class: 'ww-ring', r: 7 }, g); ring.style.stroke = 'var(--ww-ink)'; ring.style.animationDelay = i * 0.35 + 's';
-      el('circle', { class: 'ww-dot', r: 7 }, g);
-      const d = SITE_DIR[pl] || 'r', t = el('text', {}, g); t.textContent = pl;
-      if (d === 'r') { t.setAttribute('x', 13); t.setAttribute('y', 5); }
-      else if (d === 'l') { t.setAttribute('x', -13); t.setAttribute('y', 5); t.setAttribute('text-anchor', 'end'); }
-      else { t.setAttribute('x', 0); t.setAttribute('y', 26); t.setAttribute('text-anchor', 'middle'); }
-    });
-    scaleSites();
-  }
-
-  function setVB(v) { vb = v; svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`); scaleSites(); }
-  function animateTo(t) {
-    cancelAnimationFrame(anim);
-    const s = { ...vb }, t0 = performance.now(), dur = reduce ? 0 : 700;
-    const step = (now) => {
-      const p = dur ? Math.min(1, (now - t0) / dur) : 1, e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
-      setVB({ x: s.x + (t.x - s.x) * e, y: s.y + (t.y - s.y) * e, w: s.w + (t.w - s.w) * e, h: s.h + (t.h - s.h) * e });
-      if (p < 1) anim = requestAnimationFrame(step);
-    };
-    anim = requestAnimationFrame(step);
-  }
-  function boxFor(name) {
-    const [x0, y0, x1, y1] = GEO.states[name].bb, AR = FULL.w / FULL.h;
-    let w = Math.max(x1 - x0, (y1 - y0) * AR) * 1.4; w = Math.max(w, 130); const h = w / AR;
-    return { x: (x0 + x1) / 2 - w / 2, y: (y0 + y1) / 2 - h / 2, w, h };
-  }
-
-  // panel (built with DOM nodes, no innerHTML)
-  const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
-  function overview() {
-    panel.replaceChildren(mk('h3', 'ww-title', 'Where we work'), mk('p', 'ww-lead', 'Click a state to see what we do there.'));
-    ORDER.forEach((n) => {
-      const s = STATES[n];
-      const row = mk('button', 'ww-row'); row.type = 'button';
-      const dot = mk('i'); dot.style.background = s.c;
-      const span = mk('span'); span.append(mk('b', null, n), document.createElement('br'), s.places.length ? s.places.join(', ') : s.placeText);
-      row.append(dot, span);
-      row.addEventListener('click', () => select(n));
-      panel.appendChild(row);
-    });
-  }
-  function showState(name) {
-    const s = STATES[name];
-    const bar = mk('div', 'ww-bar'); bar.style.background = s.c;
-    const where = mk('ul', 'ww-where');
-    if (s.places.length) {
-      s.places.forEach((p) => {
-        const li = mk('li'); li.dataset.site = p; li.append(mk('span', 'ww-pin'), p);
-        const g = () => gS.querySelector(`.ww-site[data-site="${p}"]`);
-        li.addEventListener('mouseenter', () => g()?.classList.add('hl'));
-        li.addEventListener('mouseleave', () => g()?.classList.remove('hl'));
-        where.appendChild(li);
-      });
-    } else {
-      where.appendChild(mk('li', 'plain', s.placeText));
-    }
-    const work = mk('ul', 'ww-work'); s.work.forEach((w) => work.appendChild(mk('li', null, w)));
-    panel.replaceChildren(bar, mk('h3', 'ww-title', name), mk('h4', 'ww-sub', 'Where'), where, mk('h4', 'ww-sub', 'What we do'), work);
-    panel.scrollTop = 0;
-  }
-  function select(name) {
-    if (active) paths[active].classList.remove('active');
-    active = name; paths[name].classList.add('active'); card.classList.add('zoomed');
-    chips.querySelectorAll('.ww-chip').forEach((c) => c.setAttribute('aria-pressed', c.dataset.state === name));
-    drawSites(name); animateTo(boxFor(name)); showState(name);
-  }
-  function reset() {
-    if (active) paths[active].classList.remove('active');
-    active = null; card.classList.remove('zoomed'); drawSites(null); animateTo(FULL); overview();
-    chips.querySelectorAll('.ww-chip').forEach((c) => c.setAttribute('aria-pressed', 'false'));
-  }
-  on($('.ww-back'), 'click', reset);
-  on(document, 'keydown', (e) => { if (e.key === 'Escape' && active) reset(); });
-  on(window, 'resize', scaleSites);
-  setVB(FULL);
-  overview();
-
-  return () => {
-    cancelAnimationFrame(anim);
-    cleanups.forEach((f) => f());
-    [gStates, gC, gS, fishes, chips, panel].forEach((n) => n.replaceChildren());
-  };
-}
+const SOLUTIONS = ['Fish Hatchery with RAS Unit', 'Solar-based Diffusers for Nursery Pond', 'Solar-based Jet Aerators', 'Solar-based Biofloc Unit', 'Solar-based Mini RAS Unit', 'Solar-based Aquaponics', 'Solar-based Ornamental Fish Breeding and Rearing', 'Solar-based Water Pump', 'Solar-based Feed Mill', 'Solar Dryer', 'Field Lab'];
+const ANCHORS = { Maharashtra: [240, 375], Karnataka: [224, 488], Odisha: [415, 351], Jharkhand: [425, 288], 'Andhra Pradesh': [320, 462], Telangana: [288, 416], Assam: [574, 258], Meghalaya: [553, 274], Mizoram: [589, 300], Nagaland: [619, 236] };
+const COLORS = ['#eab56a', '#5eb2b5', '#ee987e', '#aaa2d5', '#83b891', '#edcd71', '#75baca', '#c3ad73', '#ca94b2', '#98b0dc'];
+const LABELS = [
+  ['Maharashtra', 240, 390], ['Karnataka', 223, 502], ['Odisha', 415, 369], ['Jharkhand', 427, 300], ['Andhra Pradesh', 324, 450],
+  ['Telangana', 293, 411], ['Assam', 574, 226], ['ML', 555, 258], ['MZ', 593, 304], ['NL', 621, 238],
+];
+const pad2 = (n) => String(n).padStart(2, '0');
 
 export default function WhereWeWork() {
-  const ref = useRef(null);
-  useEffect(() => mountMap(ref.current), []);
+  const [selected, setSelected] = useState('Assam');
+  const [showNames, setShowNames] = useState(true);
+  const [jump, setJump] = useState(0);
+  const idx = STATES.indexOf(selected);
+  const detail = INFO[selected];
+  const [ax, ay] = ANCHORS[selected];
+  const planned = detail.status === 'Planned';
+
+  // On phones, picking a state from the list scrolls to its details
+  useEffect(() => {
+    if (jump && window.innerWidth < 768) document.querySelector('.aq-detail')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [jump]);
+
+  const choose = (name, fromList = false) => {
+    setSelected(name);
+    if (fromList) setJump((n) => n + 1);
+  };
 
   return (
-    <section className="section ww" id="where-we-work" ref={ref}>
+    <div className="aq">
       <div className="wrap">
-        <div className="section-head">
-          <div>
-            <div className="eyebrow">Where We Work</div>
-            <h2>Climate Resilient Fisheries</h2>
-            <p>Where SELCO Foundation works on fisheries and climate resilient aquaculture. Click a state to see where we work in it and what we do there.</p>
-          </div>
-        </div>
-        <div className="ww-layout">
-          <div>
-            <div className="ww-mapcard">
-              <svg className="ww-map" viewBox="0 0 1010 720" role="img" aria-label="Map of India with ten fisheries states highlighted">
-                <defs>
-                  <g id="ww-fishshape"><path d="M0 0c6-6 17-6 24 0c-7 6-18 6-24 0z" /><path d="M23 0l9-6v12z" /></g>
-                </defs>
-                <g className="ww-fishes" aria-hidden="true" />
-                <g className="ww-states" />
-                <path className="ww-outline" />
-                <g className="ww-callouts" />
-                <g className="ww-sites" />
-              </svg>
-              <button className="ww-back" type="button">Back to India map</button>
+        <header className="aq-head">
+          <h1>Fisheries, ready for a changing climate</h1>
+          <p className="aq-fact">India · Fisheries &amp; climate-resilient aquaculture</p>
+          <p className="aq-intro">Explore our fisheries and climate-resilient aquaculture activities across India.</p>
+        </header>
+
+        <div className="aq-count"><span>10 STATES IN VIEW</span></div>
+
+        <div className="aq-layout">
+          <section className="aq-map" aria-label="India state map">
+            <div className="aq-toolbar">
+              <span>Tap a coloured state</span>
+              <button type="button" aria-pressed={showNames} onClick={() => setShowNames(!showNames)}>
+                {showNames ? 'Hide' : 'Show'} labels
+              </button>
             </div>
-            <div className="ww-chips" aria-label="States" />
-          </div>
-          <aside className="ww-panel" aria-live="polite" />
+            <svg viewBox="0 15 700 690" role="img" aria-label="India map with ten work states highlighted">
+              <defs>
+                <marker id="aq-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                  <path d="M0 0 L6 3 L0 6" fill="none" stroke="#251f21" strokeWidth="1.2" />
+                </marker>
+                <pattern id="aq-water" width="35" height="35" patternUnits="userSpaceOnUse">
+                  <path d="M0 18 Q9 12 18 18 T35 18" fill="none" stroke="#daebec" strokeWidth=".6" />
+                </pattern>
+              </defs>
+              <rect width="700" height="720" fill="#f6fbfb" />
+              <rect width="700" height="720" fill="url(#aq-water)" />
+              {INDIA_MAP.map((s) => {
+                const i = STATES.indexOf(s.name);
+                const active = i >= 0;
+                const isSel = selected === s.name;
+                return (
+                  <path
+                    key={s.name}
+                    d={s.d}
+                    fill={active ? COLORS[i] : '#e6e8e5'}
+                    stroke={isSel ? '#251f21' : '#fff'}
+                    strokeWidth={isSel ? 2.3 : 0.8}
+                    fillRule="evenodd"
+                    className={active ? 'aq-state on' : 'aq-state'}
+                    role={active ? 'button' : undefined}
+                    tabIndex={active ? 0 : undefined}
+                    aria-label={active ? `Select ${s.name}` : undefined}
+                    aria-pressed={active ? isSel : undefined}
+                    onClick={() => active && choose(s.name)}
+                    onKeyDown={(e) => {
+                      if (active && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); choose(s.name); }
+                    }}
+                  >
+                    <title>{s.name}</title>
+                  </path>
+                );
+              })}
+              <g pointerEvents="none">
+                <circle cx={ax} cy={ay} r="4" fill="#251f21" />
+                <path d={`M${ax} ${ay} Q${ax + 40} ${ay - 40} 647 382`} fill="none" stroke="#251f21" strokeWidth="1.4" strokeDasharray="5 4" markerEnd="url(#aq-arrow)" />
+                <rect x="543" y="391" width="132" height="39" rx="6" fill="white" stroke="#eae9ea" />
+                <text x="609" y="415" textAnchor="middle" fontSize="11" fill="#251f21">
+                  Explore {selected.length > 15 ? 'state details' : selected}
+                </text>
+              </g>
+              {showNames && (
+                <g className="aq-labels" pointerEvents="none">
+                  {LABELS.map(([t, x, y]) => <text key={t} x={x} y={y}>{t}</text>)}
+                </g>
+              )}
+              <text className="aq-sea" x="87" y="510">ARABIAN SEA</text>
+              <text className="aq-sea" x="428" y="500">BAY OF BENGAL</text>
+            </svg>
+            <p className="aq-caption">Colours identify states, not project scale. The dotted arrow is a state-to-detail callout, not a route. Exact project sites are not plotted. ML: Meghalaya · MZ: Mizoram · NL: Nagaland.</p>
+          </section>
+
+          <section className="aq-detail" aria-live="polite" aria-label="Selected state details" style={{ borderTopColor: COLORS[idx] }}>
+            <span className="aq-eyebrow">STATE {pad2(idx + 1)} / 10</span>
+            <h2>{selected}</h2>
+            <span className={`aq-status${planned ? ' planned' : ''}`}>{detail.status}</span>
+            <div className="aq-body">
+              <h3>{planned ? 'Where we plan to work' : 'Where we work'}</h3>
+              <p className="aq-location">{detail.where}</p>
+              <h3>{planned ? 'Planned activities' : 'What we do'}</h3>
+              <ul>{detail.activities.map((a) => <li key={a}>{a}</li>)}</ul>
+            </div>
+            {planned && <p className="aq-note">These activities are planned and have not yet been implemented.</p>}
+          </section>
         </div>
+
+        <section className="aq-block">
+          <h2 className="aq-label">Solutions</h2>
+          <ul className="aq-solutions">
+            {SOLUTIONS.map((name, i) => (
+              <li key={name}><span className="aq-num">{pad2(i + 1)}</span><span>{name}</span></li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="aq-block">
+          <h2 className="aq-label">Explore all 10 states</h2>
+          <div className="aq-states">
+            {STATES.map((s, i) => (
+              <button key={s} type="button" aria-pressed={s === selected} className={s === selected ? 'picked' : ''} onClick={() => choose(s, true)}>
+                <span className="aq-swatch" style={{ background: COLORS[i] }} />
+                <span>{s}</span>
+                <span className="aq-go" aria-hidden="true">↗</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <aside className="aq-callout">
+          <b>Arrow direction</b>
+          <p>Arrows currently connect the selected state to its detail callout; a common origin has not been specified.</p>
+        </aside>
+
+        <p className="aq-foot">Updated 6 October 2026. Boundary geometry: India Geodata community dataset, SOI-labelled 2024 release; simplified for display, not independently certified. This is a programme overview, not a survey map.</p>
       </div>
-    </section>
+    </div>
   );
 }

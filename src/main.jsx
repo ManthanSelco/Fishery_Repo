@@ -14,7 +14,7 @@ import WhereWeWork from './jal/WhereWeWork.jsx';
 import Handbook from './handbook/Handbook.jsx';
 import Event from './jal/Event.jsx';
 
-const TITLES = { '/handbook': 'India Fisheries Handbook — Interactive Digital Edition', '/event': 'Catalysing Climate Action in Fisheries — National Convening', '/where-we-work': 'Climate Resilient Fisheries: where we work' };
+const TITLES = { '/handbook': 'India Fisheries Handbook — Interactive Digital Edition', '/event': 'Catalysing Climate Action in Fisheries — National Convening', '/where-we-work': 'Aquaculture across India — Fisheries, ready for a changing climate' };
 
 function ScrollAndTitle() {
   const { pathname } = useLocation();

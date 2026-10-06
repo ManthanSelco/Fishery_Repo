@@ -735,97 +735,7 @@ figure.fig figcaption { padding: 10px 12px; font-size: .8rem; color: var(--ink-s
 }
 @media (max-width: 350px) { .brand-name { display: none; } }
 
-/* 9. Where we work (Climate Resilient Fisheries map on Home) */
-.ww {
-  --ww-ink: var(--ink); --ww-muted: var(--ink-soft); --ww-card: var(--surface); --ww-line: var(--line);
-  --ww-sea: #D2E8EB; --ww-land: #ECE6D7; --ww-landline: #CBC2AD; --ww-halo: #FFFFFF; --ww-fish: #7FB3BB;
-}
-:root[data-theme='dark'] .ww { --ww-sea: #163A3F; --ww-land: #2A3735; --ww-landline: #46524F; --ww-halo: #122022; --ww-fish: #3F7A83; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .ww { --ww-sea: #163A3F; --ww-land: #2A3735; --ww-landline: #46524F; --ww-halo: #122022; --ww-fish: #3F7A83; }
-}
-.ww-layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 22px; align-items: start; }
-.ww-mapcard {
-  position: relative; background-color: var(--ww-sea); border-radius: 18px; overflow: hidden; border: 1px solid var(--ww-line);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='18'%3E%3Cpath d='M0 9 q10 -7 20 0 t20 0' fill='none' stroke='%23000' stroke-opacity='.07' stroke-width='1.2'/%3E%3C/svg%3E");
-}
-.ww-map { display: block; width: 100%; height: auto; touch-action: manipulation; font-family: var(--font-body); }
-.ww-back {
-  position: absolute; top: 14px; left: 14px; font: inherit; font-size: 15px; font-weight: 700; color: var(--ww-ink);
-  background: var(--ww-card); border: 1px solid var(--ww-line); border-radius: 999px; padding: 7px 14px; cursor: pointer;
-  opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity .25s, transform .25s;
-}
-.zoomed .ww-back { opacity: 1; pointer-events: auto; transform: none; }
-.ww-back:focus-visible, .ww-chip:focus-visible, .ww-st:focus-visible, .ww-callout:focus-visible, .ww-row:focus-visible { outline: 3px solid #1E6FD9; outline-offset: 2px; }
-
-.ww-st { vector-effect: non-scaling-stroke; stroke: var(--ww-landline); stroke-width: .8; fill: var(--ww-land); transition: opacity .35s, filter .2s; }
-.ww-st.on { stroke: #fff; stroke-width: 1.1; cursor: pointer; }
-:root[data-theme='dark'] .ww-st.on { stroke: var(--paper); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .ww-st.on { stroke: var(--paper); } }
-.ww-st.on:hover, .ww-st.on.hl { filter: brightness(1.12) saturate(1.1); }
-.zoomed .ww-st.on:not(.active) { filter: saturate(.18) brightness(1.28); }
-.zoomed .ww-st:not(.on) { filter: brightness(1.03); }
-.ww-outline { vector-effect: non-scaling-stroke; fill: none; stroke: var(--ww-ink); stroke-opacity: .35; stroke-width: 1.2; pointer-events: none; transition: opacity .3s; }
-.zoomed .ww-outline { opacity: 0; }
-.ww-callouts, .ww-fishes { transition: opacity .3s; }
-.zoomed .ww-callouts, .zoomed .ww-fishes { opacity: 0; pointer-events: none; }
-.ww-callout { cursor: pointer; opacity: 0; animation: ww-fade .5s ease-out forwards; animation-delay: var(--dl); }
-.ww-callout rect { fill: var(--ww-card); stroke-width: 2; }
-.ww-callout text { font-size: 16px; font-weight: 700; fill: var(--ww-ink); }
-.ww-callout:hover rect { stroke-width: 3; }
-.ww-arrow { fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: ww-draw .9s ease-out forwards; animation-delay: var(--dl); }
-.ww-arrow.casing { stroke: var(--ww-card) !important; stroke-width: 6; opacity: .9; }
-.ww-head { stroke: var(--ww-card); stroke-width: 1.6; stroke-linejoin: round; }
-.ww-site text { font-size: 15px; font-weight: 700; fill: var(--ww-ink); paint-order: stroke; stroke: var(--ww-halo); stroke-width: 4px; stroke-linejoin: round; }
-.ww-site .ww-dot { fill: var(--ww-ink); stroke: #fff; stroke-width: 2.5; }
-.ww-site .ww-ring { fill: none; stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: ww-ripple 2.2s ease-out infinite; }
-.ww-site.hl .ww-dot { r: 9; }
-@keyframes ww-ripple { from { transform: scale(1); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
-@keyframes ww-draw { to { stroke-dashoffset: 0; } }
-@keyframes ww-fade { to { opacity: 1; } }
-.ww-fish { fill: var(--ww-fish); opacity: .75; }
-.ww-swim { animation: ww-swim var(--t) linear infinite alternate; }
-@keyframes ww-swim { from { transform: translate(0, 0); } to { transform: translate(var(--dx), var(--dy)); } }
-
-.ww-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.ww-chip {
-  font: inherit; font-size: 15px; color: var(--ww-ink); background: var(--ww-card); border: 1px solid var(--ww-line); border-radius: 999px;
-  padding: 6px 13px 6px 9px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
-}
-.ww-chip i { width: 13px; height: 13px; border-radius: 50%; display: block; }
-.ww-chip[aria-pressed='true'] { border-color: var(--ww-ink); font-weight: 700; }
-
-.ww-panel {
-  background: var(--ww-card); border: 1px solid var(--ww-line); border-radius: 18px; padding: 22px 22px 18px;
-  position: sticky; top: calc(var(--topbar-h) + 16px); max-height: calc(100vh - var(--topbar-h) - 32px); overflow: auto;
-}
-.ww-title { margin: 0; font-size: 1.6rem; line-height: 1.15; }
-.ww-lead { margin: 6px 0 16px; color: var(--ww-muted); }
-.ww-bar { height: 6px; border-radius: 3px; margin-bottom: 14px; }
-.ww-sub { margin: 18px 0 8px; font-size: 15px; font-weight: 700; color: var(--ww-muted); font-family: var(--font-body); }
-.ww-where, .ww-work { list-style: none; margin: 0; padding: 0; }
-.ww-where li { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; padding: 5px 0; }
-.ww-where li.plain { font-weight: 400; font-size: 17px; }
-.ww-pin { width: 11px; height: 11px; border-radius: 50%; flex: none; background: var(--ww-ink); box-shadow: 0 0 0 2px var(--ww-card), 0 0 0 3px var(--ww-ink); }
-.ww-work li { font-size: 18px; padding: 9px 0 9px 14px; border-left: 4px solid var(--ww-line); margin-bottom: 8px; }
-.ww-row { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; font: inherit; color: var(--ww-ink); background: none; border: 0; border-top: 1px solid var(--ww-line); padding: 10px 2px; cursor: pointer; }
-.ww-lead + .ww-row { border-top: 0; }
-.ww-row:hover b { text-decoration: underline; }
-.ww-row i { width: 13px; height: 13px; border-radius: 50%; margin-top: 5px; flex: none; }
-
-@media (max-width: 980px) {
-  .ww-layout { grid-template-columns: 1fr; }
-  .ww-panel { position: static; max-height: none; }
-}
-@media (max-width: 640px) { .ww-callouts { display: none; } }
-@media (prefers-reduced-motion: reduce) {
-  .ww-arrow { animation: none; stroke-dashoffset: 0; }
-  .ww-callout { animation: none; opacity: 1; }
-  .ww-swim, .ww-site .ww-ring { animation: none; }
-  .ww-site .ww-ring { display: none; }
-}
-
-/* 10. Header fit with the extra "Where We Work" link */
+/* 9. Header fit with the extra "Where We Work" link */
 .jp-top-inner { gap: 12px; }
 .brand { flex-shrink: 0; }
 .jp-nav { min-width: 0; gap: 0; }
@@ -846,4 +756,71 @@ figure.fig figcaption { padding: 10px 12px; font-size: .8rem; color: var(--ink-s
   .jp-nav { display: none; }
   .tb-menu { display: inline-grid; }
   .jp-actions { margin-left: auto; }
+}
+
+/* 10. Where We Work page (Aquaculture across India) */
+.aq { padding-block: 40px 56px; }
+.aq-head h1 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); font-weight: 800; }
+.aq-fact { margin: 12px 0 0; color: var(--ink-soft); font-size: .95rem; }
+.aq-intro { margin: 18px 0 0; max-width: 60ch; }
+.aq-count { margin: 26px 0 22px; }
+.aq-count span { display: inline-block; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em; color: var(--ink-soft); padding-bottom: 8px; border-bottom: 2px solid var(--pond); }
+
+.aq-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr); gap: 24px; align-items: start; }
+.aq-map { min-width: 0; }
+.aq-map svg { width: 100%; display: block; border-radius: var(--radius); border: 1px solid var(--line); }
+.aq-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: .85rem; color: var(--ink-soft); margin-bottom: 10px; }
+.aq-toolbar button {
+  font: inherit; font-size: .85rem; font-weight: 600; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 14px; min-height: 40px; cursor: pointer;
+}
+.aq-toolbar button:hover { background: var(--surface-2); }
+.aq-state.on { cursor: pointer; transition: filter .2s; }
+.aq-state.on:hover { filter: brightness(.91); }
+.aq-state.on:focus { outline: none; stroke: #251f21; stroke-width: 3.5; }
+.aq-labels { font-size: 13px; font-weight: 600; fill: #353638; text-anchor: middle; paint-order: stroke; stroke: #fff; stroke-width: 2px; stroke-linejoin: round; font-family: var(--font-body); }
+.aq-sea { font-size: 10px; letter-spacing: 2px; fill: #839ba1; font-family: var(--font-body); }
+.aq-map svg text { font-family: var(--font-body); }
+.aq-caption { margin: 10px 0 0; font-size: .82rem; color: var(--ink-soft); }
+
+.aq-detail { margin-top: 54px; border-top: 5px solid; padding: 22px 0; border-bottom: 1px solid var(--line); scroll-margin-top: calc(var(--topbar-h) + 14px); }
+.aq-eyebrow { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .14em; color: var(--ink-soft); }
+.aq-detail h2 { font-size: 1.9rem; font-weight: 800; margin: 10px 0 12px; }
+.aq-status { display: inline-block; font-size: .75rem; font-weight: 600; background: var(--surface-2); color: var(--ink-soft); padding: 5px 10px; border-radius: 6px; }
+.aq-status.planned { background: var(--marigold-soft); color: var(--warn); }
+.aq-body h3 { font-family: var(--font-body); font-size: .9rem; font-weight: 700; margin: 20px 0 5px; }
+.aq-location { margin: 4px 0; font-weight: 600; }
+.aq-body ul { margin: 8px 0 0; padding-left: 18px; font-size: .92rem; line-height: 1.6; }
+.aq-body li { margin: 6px 0; }
+.aq-note { margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--line); font-size: .85rem; color: var(--ink-soft); }
+
+.aq-block { margin-top: 48px; }
+.aq-label { font-size: 1.35rem; font-weight: 800; margin-bottom: 14px; }
+.aq-solutions { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
+.aq-solutions li { display: flex; align-items: baseline; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: .95rem; }
+.aq-num { font-family: var(--font-mono); color: var(--pond); font-weight: 600; font-size: .72rem; min-width: 20px; }
+.aq-states { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.aq-states button {
+  display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 10px 14px; text-align: left; cursor: pointer;
+  font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
+}
+.aq-states button:hover { background: var(--surface-2); }
+.aq-states button.picked { border-color: var(--ink); font-weight: 700; }
+.aq-swatch { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.aq-go { margin-left: auto; color: var(--ink-soft); }
+.aq-toolbar button:focus-visible, .aq-states button:focus-visible { outline: 2px solid var(--pond); outline-offset: 3px; }
+.aq-callout { margin-top: 36px; padding: 14px 18px; border-left: 4px solid var(--pond); background: var(--pond-soft); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.aq-callout b { font-size: .9rem; }
+.aq-callout p { margin: 4px 0 0; font-size: .88rem; color: var(--ink-soft); }
+.aq-foot { margin: 28px 0 0; padding-top: 16px; border-top: 1px solid var(--line); font-size: .8rem; color: var(--ink-faint); }
+
+@media (max-width: 767px) {
+  .aq { padding-block: 24px 40px; }
+  .aq-layout { grid-template-columns: 1fr; gap: 14px; }
+  .aq-map svg { max-width: 420px; margin: 0 auto; }
+  .aq-labels { font-size: 15px; }
+  .aq-detail { margin-top: 0; padding-top: 16px; }
+  .aq-detail h2 { font-size: 1.6rem; }
+  .aq-solutions, .aq-states { grid-template-columns: 1fr; }
+  .aq-solutions li { padding: 10px 0; }
 }
