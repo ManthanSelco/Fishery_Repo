@@ -10,10 +10,11 @@ import Species, { SpeciesDetail } from './jal/Species.jsx';
 import Tools, { ToolDetail, SystemCompare } from './jal/Tools.jsx';
 import Records from './jal/Records.jsx';
 import { Saved, Search, Decision, Solar, SolarDetail, Stories, Glossary } from './jal/Misc.jsx';
+import WhereWeWork from './jal/WhereWeWork.jsx';
 import Handbook from './handbook/Handbook.jsx';
 import Event from './jal/Event.jsx';
 
-const TITLES = { '/handbook': 'India Fisheries Handbook — Interactive Digital Edition', '/event': 'Catalysing Climate Action in Fisheries — National Convening' };
+const TITLES = { '/handbook': 'India Fisheries Handbook — Interactive Digital Edition', '/event': 'Catalysing Climate Action in Fisheries — National Convening', '/where-we-work': 'Climate Resilient Fisheries: where we work' };
 
 function ScrollAndTitle() {
   const { pathname } = useLocation();
@@ -49,6 +50,7 @@ function App() {
             <Route path="solar/:id" element={<SolarDetail />} />
             <Route path="stories" element={<Stories />} />
             <Route path="glossary" element={<Glossary />} />
+            <Route path="where-we-work" element={<WhereWeWork />} />
             <Route path="*" element={<Home />} />
           </Route>
         </Routes>

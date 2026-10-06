@@ -14,6 +14,7 @@ const NAV = [
   { to: '/records', label: 'Records' },
   { to: '/solar', label: 'Solar' },
   { to: '/glossary', label: 'Glossary' },
+  { to: '/where-we-work', label: 'Where We Work' },
 ];
 
 const BOTTOM = [
@@ -131,6 +132,7 @@ export default function Layout() {
           <div>
             <h4>Resources</h4>
             <Link to="/glossary">Glossary</Link>
+            <Link to="/where-we-work">Where We Work</Link>
             <Link to="/species">Species Explorer</Link>
             <Link to="/solar">Solar Solutions</Link>
             <Link to="/records">Farm Records</Link>
